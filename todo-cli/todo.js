@@ -62,7 +62,7 @@ const dueLater = () => {
         }
 
     }
-    return string
+    return string.slice(0,string.length-1)
   }
 
   return {
