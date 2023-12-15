@@ -1,18 +1,18 @@
-const Sequelize = require("sequelize");
+const Sequelize = require('sequelize')
 
-const database = "todo_db";
-const username = "postgres";
-const password = "root";
+const database = 'todo_db'
+const username = 'postgres'
+const password = 'root'
 const sequelize = new Sequelize(database, username, password, {
-  host: "localhost",
-  dialect: "postgres",
-});
+  host: 'localhost',
+  dialect: 'postgres'
+})
 
 const connect = async () => {
-  return sequelize.authenticate();
-};
+  return sequelize.authenticate()
+}
 
 module.exports = {
   connect,
-  sequelize,
-};
+  sequelize
+}
