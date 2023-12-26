@@ -12,7 +12,7 @@
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content")
         function updateTodo(id){
-            fetch(`/todos/${id}/markAsCompleted`,{
+            fetch(`/todos/${id}`,{
                 method: "put",
                 headers: {"Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -47,8 +47,10 @@
 </head>
 
 <body>
+    
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
+            <%- include('header.ejs')%>
             <h1 class="text-2xl gap-2 font-semibold text-gray-600">My Todo-list</h1>
             <form action="/todos" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
@@ -67,6 +69,7 @@
             </form>
     
         <%- include('todos.ejs')%>
+        <%- include('footer.ejs')%>
 
 
         </div>

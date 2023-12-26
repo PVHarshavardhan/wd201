@@ -15,14 +15,14 @@ module.exports = (sequelize, DataTypes) => {
       return this.create({ title, dueDate, completed: false });
     }
 
-    markAsCompleted() {
-      return this.update({ completed: true });
-    }
+    // markAsCompleted () {
+    //   return this.update({ completed: true })
+    // }
 
     setCompletionStatus(state) {
       if (state === true) {
         return this.update({
-          comleted: false,
+          completed: false,
         });
       } else {
         return this.update({
