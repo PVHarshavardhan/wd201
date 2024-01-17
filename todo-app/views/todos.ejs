@@ -3,104 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    
+    <meta name="csrf-token" content="<%= csrfToken %>"/>
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Todo-app</title>
+    <script>
+        var token = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content")
+        function updateTodo(id){
+            fetch(`/todos/${id}`,{
+                method: "put",
+                headers: {"Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "_csrf": token
+                })
+            })
+            .then((res) =>{
+                if(res.ok){
+                window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err))
+        }
+        function deleteTodo(id){
+            fetch(`/todos/${id}`,{
+                method: "delete",
+                headers: {"Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "_csrf": token
+                })
+            })
+            .then((res) =>{
+                if(res.ok){
+                window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err))
+
+        }
+
+    </script>
 </head>
+
 <body>
-<% const dateToday = new Date(); %>
-
-<% const formattedDate = (d) => {
-    return d.toISOString().split("T")[0];
-   }; 
-%>
-
-<% const today = formattedDate(dateToday); %>
-   <div>
     
-   
-    <div>
-        <h5>Overdue</h5>
-        <ul class="list-none">
-            <% let count1=0; %>
-            <% for(var i=0;i<allTodos.length;i++){ %>
-                <% if(allTodos[i].dueDate < today){ 
-                    count1++; %>
-            <li class = "Todo-Item">
-                <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
-                    <input id="todo-checkbox-<%= allTodos[i].id %>" type="checkbox" <%= allTodos[i].completed ? "checked": "" %> onclick="updateTodo(<%=allTodos[i].id%>)" class="w-4 text-blue-600 bg-gray-100 rounded border-gray-300">
-                    <label for="todo-checkbox-<%= allTodos[i].id %>" class="ml-2 text-sm text-gray-600 cursor-pointer"><%=allTodos[i].title%></label>
-                    <a href="#" class="hidden trash-icon ml-2" onclick="deleteTodo(<%= allTodos[i].id %>)" >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                      </svg>
-                    </a>                      
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs')%>
+            <a href="/signout">Signout</a>
+            <p class="py-2">Welcome to the Todo Application</p>
+            <h1 class="text-2xl gap-2 font-semibold text-gray-600">My Todo-list</h1>
+            <form action="/todos" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                
+                <div class="flex gap-2 py-4">
+                    <div class="flex-auto">
+                        <input type="text" name="title" placeholder="what's next?" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm" required>
+                    </div>
+                    <div class="flex-auto">
+                        <input type="date" name="dueDate" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4" required>
+                    </div>
+                    <div class="flex-none">
+                        <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2">Add</button>
+                    </div>
                 </div>
-            </li>
-            <% } }%>
-            
-        </ul>
-        <p id="count-overdue"> No.of todos of Overdue <%=count1%></p>
-        <h5>Due Today</h5>
-        <ul class="list-none">
-            <% let count2=0; %>
-            <% for(var i=0;i<allTodos.length;i++){ %>
-                <% if(allTodos[i].dueDate == today){ 
-                    count2++; %>
-            <li class = "Todo-Item">
-                <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
-                    <input id="todo-checkbox-<%= allTodos[i].id %>" type="checkbox" <%= allTodos[i].completed ? "checked": "" %> onclick="updateTodo(<%=allTodos[i].id%>)" class="w-4 text-blue-600 bg-gray-100 rounded border-gray-300">
-                    <label for="todo-checkbox-<%= allTodos[i].id %>" class="ml-2 text-sm text-gray-600 cursor-pointer"><%=allTodos[i].title%></label>
-                    <a href="#" class="hidden trash-icon ml-2" onclick="deleteTodo(<%= allTodos[i].id %>)">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                      </svg>
-                    </a>                      
-                </div>
-            </li>
-            <% } }%>
-        </ul>
-        <p id="count-due-today"> No.of todos of Due Today <%=count2%></p>
-        <h5>Due Later</h5>
-        <ul class="list-none">
-            <% let count3=0; %>
-            <% for(var i=0;i<allTodos.length;i++){ %>
-                <% if(allTodos[i].dueDate > today){ 
-                    count3++; %>
-            <li class = "Todo-Item">
-                <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
-                    <input id="todo-checkbox-<%= allTodos[i].id %>" type="checkbox" <%= allTodos[i].completed ? "checked": "" %> onclick="updateTodo(<%=allTodos[i].id%>)" class="w-4 text-blue-600 bg-gray-100 rounded border-gray-300">
-                    <label for="todo-checkbox-<%= allTodos[i].id %>" class="ml-2 text-sm text-gray-600 cursor-pointer"><%=allTodos[i].title%></label>
-                    <a href="#" class="hidden trash-icon ml-2" onclick="deleteTodo(<%= allTodos[i].id %>)">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                      </svg>
-                    </a>                      
-                </div>
-            </li>
-            <% } }%>
-        </ul>
-        <p id="count-due-later"> No.of todos of Due Later <%=count3%></p>
-        <h5>Completed Items</h5>
-        <ul class="list-none">
-            <% let count4=0; %>
-            <% for(var i=0;i<allTodos.length;i++){ %>
-                <% if(allTodos[i].completed == true){ 
-                    count4++; %>
-            <li class = "Todo-Item">
-                <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
-                    <input id="todo-checkbox-<%= allTodos[i].id %>" type="checkbox" <%= allTodos[i].completed ? "checked": "" %> onclick="updateTodo(<%=allTodos[i].id%>)" class="w-4 text-blue-600 bg-gray-100 rounded border-gray-300">
-                    <label for="todo-checkbox-<%= allTodos[i].id %>" class="ml-2 text-sm text-gray-600 cursor-pointer"><%=allTodos[i].title%></label>
-                    <a href="#" class="hidden trash-icon ml-2" onclick="deleteTodo(<%= allTodos[i].id %>)">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                      </svg>
-                    </a>                      
-                </div>
-            </li>
-            <% } }%>
-        </ul>
-        <p id="count-completed"> No.of todos completed <%=count4%></p>
+            </form>
+    
+        <%- include('todo.ejs')%>
+        <%- include('footer.ejs')%>
+
+
+        </div>
     </div>
-</div>
+    
+    
 </body>
 </html>
+
+<% if(messages && messages.error && messages.error.length > 0)  { %>
+    <% for(var i=0; i<messages.error.length; i++) { %>
+            <li> <%= messages.error[i] %></li>
+    <% } %>
+  <% } %>

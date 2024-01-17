@@ -9,10 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Todo.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
     }
 
-    static addTodo({ title, dueDate }) {
-      return this.create({ title, dueDate, completed: false });
+    static addTodo({ title, dueDate, userId }) {
+      return this.create({ title, dueDate, completed: false, userId });
     }
 
     // markAsCompleted () {
@@ -35,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
       return this.findAll();
     }
 
-    static async deleteTodo(id) {
-      const state = await this.destroy({ where: { id } });
+    static async deleteTodo(id, userId) {
+      const state = await this.destroy({ where: { id, userId } });
       // console.log('hello')
       console.log(state);
       if (state > 0) {
