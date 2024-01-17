@@ -12,6 +12,7 @@ app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
 const path = require("path");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
+
 const session = require("express-session");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
@@ -84,12 +85,16 @@ passport.deserializeUser((id, done) => {
 
 // const todo = require('./models/todo')
 app.set("view engine", "ejs");
-app.get("/", async (request, response) => {
-  response.render("index", {
-    title: "Todoapplication",
-    csrfToken: request.csrfToken(),
-  });
-});
+app.get(
+  "/",
+  connectEnsureLogin.ensureLoggedOut({ redirectTo: "/todos" }),
+  async (request, response) => {
+    response.render("index", {
+      title: "Todoapplication",
+      csrfToken: request.csrfToken(),
+    });
+  },
+);
 
 app.get(
   "/todos",
